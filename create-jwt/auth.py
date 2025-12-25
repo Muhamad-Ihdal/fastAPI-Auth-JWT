@@ -24,3 +24,5 @@ if __name__ == "__main__":
     pass
     # x = create_token(user_id=2,email="efadfafdsa")
     # print(type(x))
+
+
