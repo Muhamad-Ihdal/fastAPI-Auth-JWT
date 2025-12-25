@@ -24,7 +24,7 @@ def profile(authorization:str = Header(None)):
         HTTPException(status_code=401,detail="Invalid token")
     
     return {
-        "id": user["sub"],
+        "id": user["sub"], 
         "email": user["email"]
     }
 

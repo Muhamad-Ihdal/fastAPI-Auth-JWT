@@ -6,7 +6,7 @@ ALGORITHM = "HS256"
 
 def create_token(user_id:int ,email:str) -> str:
     payload = {
-        "sub" : int(user_id),
+        "sub" : str(user_id),
         "email":email,
         "exp": datetime.now(timezone.utc) + timedelta(minutes=5)
     }
