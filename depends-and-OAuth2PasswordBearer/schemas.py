@@ -7,4 +7,8 @@ class UserRegister(BaseModel):
 class UserResponse(BaseModel):
     id:int
     email: EmailStr
-    
+
+class SuccessResponse(BaseModel):
+    success:bool
+    massage:str
+    user:UserResponse
