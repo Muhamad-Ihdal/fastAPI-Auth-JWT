@@ -4,7 +4,7 @@ import sqlite3
 def foreign_key_on():
     conn = sqlite3.connect("users.db")
     conn.execute("PRAGMA foreign_keys = ON;")
-    conn.row_factory = sqlite3.Row
+    # conn.row_factory = sqlite3.Row
     return conn
 
 def create_table():
@@ -22,8 +22,6 @@ def create_table():
     conn.commit()
     conn.close()
     return
-
-
 
 
 def add_user(email,hashed_password):
@@ -44,8 +42,6 @@ def add_user(email,hashed_password):
     conn.commit()
     conn.close()
     return user
-
-
 
 
 def get_user_by_id(user_id:int):
