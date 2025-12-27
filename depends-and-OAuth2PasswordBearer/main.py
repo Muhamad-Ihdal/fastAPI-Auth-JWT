@@ -16,7 +16,7 @@ def get_current_user(token = Depends(oauth2_sheme)):
 
     if not user['success']:
         error(massage=user["massage"])
-    return user
+    return user['data']
     
 
 def error(status_code=401,massage="not valid"):
@@ -69,6 +69,12 @@ def login(user:UserRequest):
         "access_token":token
     }
     
+@app.get("/profile",response_model=UserResponse)
+def profile(user = Depends(get_current_user)):
+    return user
+
+# @app.put("/profile",response_model=SuccessResponse)
+# def update_profile(user = Depends(get_current_user)):
 
     
 
