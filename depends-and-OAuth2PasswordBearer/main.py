@@ -10,30 +10,34 @@ def error(status_code=401,massage="not valid"):
         status_code=status_code,
         detail={
             "success":False,
-            "massage":massage
+            "massage":massage,
+            "data":None
         }
     )
 
-def berhasil(massage="Proses berhasil",user={}):
+def berhasil(massage="Proses berhasil",data={}):
     return {
         "success":True,
         "massage":massage,
-        "user":user
+        "data":data
     }
 
 @app.post("/register",response_model=SuccessResponse)
 def register(user: UserRequest):
     # user = user.model_dump()
-    user_data = add_user(user.email,hash_password(user.password))
-    if not user_data:
-        error(massage="Email telah digunakan")
+    hasil= add_user(user.email,hash_password(user.password))
+    if not hasil["success"]:
+        error(massage=hasil["massage"])
 
-    return berhasil(massage="Register berhasil",user=user_data)
+    return berhasil(massage=hasil["massage"],user=hasil["data"])
 
 @app.post("/login")
 def login(user:UserRequest):
-    user_data = get_user_by_email(user.email)
-    if not user_data:
-        error(massage="Invalid email or password")
-    hashed_password = user_data["password"]
+    hasil = get_user_by_email(user.email)
+    success = hasil["success"]
+    massage = hasil["massage"]
+    data = hasil["data"]
+    if not success:
+        error(massage=massage)
+
     

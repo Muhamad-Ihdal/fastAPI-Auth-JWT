@@ -4,7 +4,7 @@ def failed(massage="gagal",data={}):
     return {
         "success":False,
         "massage":massage,
-        "data":data
+        "data":dict(data)
     }
 
 def success(data,massage="No massage"):
