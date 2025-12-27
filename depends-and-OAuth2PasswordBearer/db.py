@@ -1,10 +1,23 @@
 import sqlite3
 
+def failed(massage="gagal",data={}):
+    return {
+        "success":False,
+        "massage":massage,
+        "data":data
+    }
+
+def success(data,massage="No massage"):
+    return {
+        "success":True,
+        "massage":massage,
+        "data":dict(data)
+    }
 
 def foreign_key_on():
-    conn = sqlite3.connect("users.db")
+    conn = sqlite3.connect("depends-and-OAuth2PasswordBearer/users.db")
     conn.execute("PRAGMA foreign_keys = ON;")
-    # conn.row_factory = sqlite3.Row
+    conn.row_factory = sqlite3.Row
     return conn
 
 def create_table():
@@ -13,7 +26,7 @@ def create_table():
 
 
     cursor.execute("""
-    CREATE TABLE IF NOT EXITS users(
+    CREATE TABLE IF NOT EXISTS users(
         id INTEGER PRIMARY KEY,
         email TEXT UNIQUE,
         password TEXT NOT NULL
@@ -30,12 +43,12 @@ def add_user(email,hashed_password):
 
     try:
         cursor.execute(
-            "INSERT INTO (email,password) VALUES (?,?)",
+            "INSERT INTO users (email,password) VALUES (?,?)",
             (email,hashed_password)
         )
     except sqlite3.IntegrityError:
         conn.close()
-        return None
+        return failed(massage="Email telah digunakan")
         
     user = get_user_by_email(email=email)
 
@@ -56,10 +69,10 @@ def get_user_by_id(user_id:int):
     user = cursor.fetchone()
     if not user:
         conn.close()
-        return None
+        return failed(massage="user tidak ditemukan")
     
     conn.close()
-    return user
+    return success(data=user)
 
 
 def get_user_by_email(email:str):
@@ -74,7 +87,7 @@ def get_user_by_email(email:str):
     user = cursor.fetchone()
     if not user:
         conn.close()
-        return None
+        return failed(massage="user tidak ditemukan")
     
     conn.close()
-    return user
+    return success(data=user)

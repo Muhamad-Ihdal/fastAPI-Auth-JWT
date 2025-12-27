@@ -32,7 +32,8 @@ def register(user: UserRequest):
 
 @app.post("/login")
 def login(user:UserRequest):
-    hashed_password = get_user_by_email(user.email)
-    if not hashed_password:
+    user_data = get_user_by_email(user.email)
+    if not user_data:
         error(massage="Invalid email or password")
+    hashed_password = user_data["password"]
     
