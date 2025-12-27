@@ -3,7 +3,7 @@ from jose import jwt,JWTError
 from schemas import UserResponse,SuccessResponse,UserRequest,LoginResponse
 # from jose import jwt,JWTError
 from auth import verify_password,hash_password,create_token_jwt,verify_token_jwt,oauth2_sheme
-from db import add_user,get_user_by_id,get_user_by_email
+from db import add_user,get_user_by_id,get_user_by_email,update_data
 app = FastAPI()
 
 def get_current_user(token = Depends(oauth2_sheme)):
@@ -75,6 +75,16 @@ def profile(user = Depends(get_current_user)):
 
 @app.put("/profile",response_model=SuccessResponse)
 def update_profile(new_profile:UserRequest,current_user = Depends(get_current_user)):
+    new_hashed_password = hash_password(new_profile.password)
+    hasil = update_data(
+        user_id=current_user["id"],
+        new_email=new_profile.email,
+        new_password=new_hashed_password)
+    success = hasil["success"]
+    if not success:
+        error(massage=hasil["massage"])
+    
+    return berhasil(massage="Profile berhasil di update",data=hasil["data"])
     
 
     
