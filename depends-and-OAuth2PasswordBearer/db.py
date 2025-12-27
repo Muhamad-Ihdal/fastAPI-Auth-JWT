@@ -1,17 +1,21 @@
 import sqlite3
 
-def failed(massage="gagal",data={}):
+def failed(massage="gagal",data=None):
+    if data :
+        data = dict(data)
     return {
         "success":False,
         "massage":massage,
-        "data":dict(data)
+        "data":data
     }
 
-def success(data={},massage="No massage"):
+def success(massage="No massage",data=None):
+    if data :
+        data = dict(data)
     return {
         "success":True,
         "massage":massage,
-        "data":dict(data)
+        "data":data
     }
 
 def foreign_key_on():
@@ -88,11 +92,10 @@ def get_user_by_email(email:str):
     user = cursor.fetchone()
     if not user:
         conn.close()
-        return failed(massage="user tidak ditemukan")
+        return failed(massage="user tidak ditemukan ")
     
     conn.close()
     return success(data=user)
-
 
 
 def update_data(user_id,new_email,new_password):
@@ -103,7 +106,7 @@ def update_data(user_id,new_email,new_password):
         cursor.execute("""
             UPDATE users
             SET email = ?,
-                passwod = ?
+                password = ?
             WHERE id = ?""",
             (new_email,new_password,user_id))
 
@@ -117,8 +120,6 @@ def update_data(user_id,new_email,new_password):
     user = get_user_by_email(email=new_email)
     return user
 
-
-
 def delete_data(user_id):
     conn = foreign_key_on()
     cursor = conn.cursor()
@@ -127,11 +128,10 @@ def delete_data(user_id):
         "DELETE FROM users WHERE id = ?",
         (user_id,))
     
-    affected_row = cursor.fetchone()
+    affected_row = cursor.rowcount
     if not affected_row:
         conn.close()
-        return failed(massage="User tidak di temukan")
-
+        return failed(massage="User tidak ditemukan ")
 
     conn.commit()
     conn.close()

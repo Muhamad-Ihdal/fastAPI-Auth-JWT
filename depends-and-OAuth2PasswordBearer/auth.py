@@ -7,8 +7,6 @@ from db import get_user_by_id
 
 oauth2_sheme = OAuth2PasswordBearer(tokenUrl="login")
 
-
-
 # ------------------------------- Hash start
 pwd_contex = CryptContext(
     schemes=['bcrypt'],
@@ -22,8 +20,6 @@ def verify_password(plain_password:str,hashed_password:str) -> bool:
     return pwd_contex.verify(plain_password,hashed_password)
 
 # ------------------------------- Hash end
-
-
 
 # ------------------------------- jwt start
 
@@ -46,16 +42,3 @@ def verify_token_jwt(token:str):
     return payload
 
 # ------------------------------- jwt end
-
-
-# ------------------------------- get current user start
-
-
-
-
-
-
-
-
-
-# ------------------------------- get current user end

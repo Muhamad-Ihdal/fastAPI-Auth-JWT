@@ -9,7 +9,7 @@ app = FastAPI()
 def get_current_user(token = Depends(oauth2_sheme)):
     payload = verify_token_jwt(token=token)
     if not payload:
-        error(massage="invalid Token")
+        error(massage="invalid Token or token expired")
     
     user_id = payload.get("sub")
     user = get_user_by_id(int(user_id))
@@ -29,11 +29,18 @@ def error(status_code=401,massage="not valid"):
         }
     )
 
-def berhasil(massage="Proses berhasil",data={}):
+def berhasil(massage="Proses berhasil",data=None):
+    if not (data is None) :
+        data2 = {
+            "id":data["id"],
+            "email":data["email"]
+        }
+
+
     return {
         "success":True,
         "massage":massage,
-        "data":data
+        "data":data2
     }
 
 # -------------------------------------------------------- request start
@@ -66,7 +73,8 @@ def login(user:UserRequest):
         "success":True,
         "massage":"login berhasil",
         "data":data,
-        "access_token":token
+        "access_token":token,
+        "token_type":"Bearer"
     }
     
 @app.get("/profile",response_model=UserResponse)
@@ -91,11 +99,9 @@ def delete_user(current_user=Depends(get_current_user)):
     hasil = delete_data(user_id=current_user["id"])
     if not hasil["success"]:
         error(status_code=400,massage=hasil["massage"])
-        
+
     return berhasil(massage=" data User berhasil di hapus",data=current_user)
 
     
 
-
-    
 # -------------------------------------------------------- request end

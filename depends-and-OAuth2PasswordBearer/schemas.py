@@ -1,4 +1,5 @@
 from pydantic import BaseModel,EmailStr
+from typing import Optional,Any
 
 class UserRequest(BaseModel):
     email: EmailStr
@@ -11,11 +12,12 @@ class UserResponse(BaseModel):
 class SuccessResponse(BaseModel):
     success:bool
     massage:str
-    data:UserResponse
+    data:Optional[Any]   
 
 class LoginResponse(BaseModel):
     success:bool
     massage:str
     data:UserResponse
     access_token:str
+    token_type:str
     
