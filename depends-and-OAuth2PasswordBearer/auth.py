@@ -30,6 +30,7 @@ def create_token_jwt(user_id:int,email:str) -> str:
         "email":email,
         "exp": datetime.now(timezone.utc) + timedelta(minutes=15)
     }
+    return jwt.decode(payload,SECRET_KEY,algorithms=ALGORITHM)
 
 def verify_token_jwt(token:str):
     try:

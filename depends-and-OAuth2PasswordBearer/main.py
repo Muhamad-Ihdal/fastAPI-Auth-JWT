@@ -1,7 +1,7 @@
 from fastapi import FastAPI,HTTPException,Depends
-from schemas import UserResponse,SuccessResponse,UserRequest
-from jose import jwt,JWTError
-from auth import verify_password,hash_password
+from schemas import UserResponse,SuccessResponse,UserRequest,LoginResponse
+# from jose import jwt,JWTError
+from auth import verify_password,hash_password,create_token_jwt,verify_token_jwt
 from db import add_user,get_user_by_id,get_user_by_email
 app = FastAPI()
 
@@ -29,15 +29,31 @@ def register(user: UserRequest):
     if not hasil["success"]:
         error(massage=hasil["massage"])
 
-    return berhasil(massage=hasil["massage"],user=hasil["data"])
+    return berhasil(massage=hasil["massage"],data=hasil["data"])
 
-@app.post("/login")
+@app.post("/login",response_model=LoginResponse)
 def login(user:UserRequest):
     hasil = get_user_by_email(user.email)
+    
     success = hasil["success"]
     massage = hasil["massage"]
     data = hasil["data"]
     if not success:
-        error(massage=massage)
+        error(massage="invalid email or password")
+    
+    if not verify_password(plain_password=user.password,hashed_password=data["password"]):
+        error(massage="invalid email or password")
+
+    token = create_token_jwt(user_id=data["id"],email=data["email"])
+
+    return {
+        "success":True,
+        "massage":"login berhasil",
+        "data":data,
+        "access_token":token
+    }
+    
+    
+
 
     

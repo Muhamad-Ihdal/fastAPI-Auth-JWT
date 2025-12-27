@@ -11,4 +11,11 @@ class UserResponse(BaseModel):
 class SuccessResponse(BaseModel):
     success:bool
     massage:str
-    user:UserResponse
+    data:UserResponse
+
+class LoginResponse(BaseModel):
+    success:bool
+    massage:str
+    data:UserResponse
+    access_token:str
+    
