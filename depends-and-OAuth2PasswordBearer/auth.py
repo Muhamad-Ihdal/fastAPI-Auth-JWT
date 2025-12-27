@@ -1,6 +1,12 @@
 from passlib.context import CryptContext
 from jose import jwt,JWTError
 from datetime import datetime,timedelta,timezone
+from fastapi.security import OAuth2PasswordBearer
+from fastapi import Depends
+from db import get_user_by_id
+
+oauth2_sheme = OAuth2PasswordBearer(tokenUrl="login")
+
 
 
 # ------------------------------- Hash start
@@ -40,3 +46,16 @@ def verify_token_jwt(token:str):
     return payload
 
 # ------------------------------- jwt end
+
+
+# ------------------------------- get current user start
+
+
+
+
+
+
+
+
+
+# ------------------------------- get current user end
