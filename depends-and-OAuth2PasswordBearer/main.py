@@ -3,7 +3,7 @@ from jose import jwt,JWTError
 from schemas import UserResponse,SuccessResponse,UserRequest,LoginResponse
 # from jose import jwt,JWTError
 from auth import verify_password,hash_password,create_token_jwt,verify_token_jwt,oauth2_sheme
-from db import add_user,get_user_by_id,get_user_by_email,update_data
+from db import add_user,get_user_by_id,get_user_by_email,update_data,delete_data
 app = FastAPI()
 
 def get_current_user(token = Depends(oauth2_sheme)):
@@ -88,7 +88,11 @@ def update_profile(new_profile:UserRequest,current_user = Depends(get_current_us
     
 @app.delete("/profile",response_model=SuccessResponse)
 def delete_user(current_user=Depends(get_current_user)):
+    hasil = delete_data(user_id=current_user["id"])
+    if not hasil["success"]:
+        error(status_code=400,massage=hasil["massage"])
         
+    return berhasil(massage=" data User berhasil di hapus",data=current_user)
 
     
 
