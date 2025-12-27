@@ -7,7 +7,7 @@ def failed(massage="gagal",data={}):
         "data":dict(data)
     }
 
-def success(data,massage="No massage"):
+def success(data={},massage="No massage"):
     return {
         "success":True,
         "massage":massage,
@@ -116,3 +116,24 @@ def update_data(user_id,new_email,new_password):
         
     user = get_user_by_email(email=new_email)
     return user
+
+
+
+def delete_data(user_id):
+    conn = foreign_key_on()
+    cursor = conn.cursor()
+
+    cursor.execute(
+        "DELETE FROM users WHERE id = ?",
+        (user_id,))
+    
+    affected_row = cursor.fetchone()
+    if not affected_row:
+        conn.close()
+        return failed(massage="User tidak di temukan")
+
+
+    conn.commit()
+    conn.close()
+        
+    return success()

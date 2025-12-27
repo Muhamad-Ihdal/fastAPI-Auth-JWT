@@ -86,6 +86,9 @@ def update_profile(new_profile:UserRequest,current_user = Depends(get_current_us
     
     return berhasil(massage="Profile berhasil di update",data=hasil["data"])
     
+@app.delete("/profile",response_model=SuccessResponse)
+def delete_user(current_user=Depends(get_current_user)):
+        
 
     
 
