@@ -92,3 +92,27 @@ def get_user_by_email(email:str):
     
     conn.close()
     return success(data=user)
+
+
+
+def update_data(user_id,new_email,new_password):
+    conn = foreign_key_on()
+    cursor = conn.cursor()
+
+    try:
+        cursor.execute("""
+            UPDATE users
+            SET email = ?,
+                passwod = ?
+            WHERE id = ?""",
+            (new_email,new_password,user_id))
+
+    except sqlite3.IntegrityError:
+        conn.close()
+        return failed(massage="Email telah digunakan")
+
+    conn.commit()
+    conn.close()
+        
+    user = get_user_by_email(email=new_email)
+    return user

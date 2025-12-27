@@ -73,8 +73,9 @@ def login(user:UserRequest):
 def profile(user = Depends(get_current_user)):
     return user
 
-# @app.put("/profile",response_model=SuccessResponse)
-# def update_profile(user = Depends(get_current_user)):
+@app.put("/profile",response_model=SuccessResponse)
+def update_profile(new_profile:UserRequest,current_user = Depends(get_current_user)):
+    
 
     
 
