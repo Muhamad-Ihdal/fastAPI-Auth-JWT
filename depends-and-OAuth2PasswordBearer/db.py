@@ -15,7 +15,8 @@ def success(data,massage="No massage"):
     }
 
 def foreign_key_on():
-    conn = sqlite3.connect("depends-and-OAuth2PasswordBearer/users.db")
+    conn = sqlite3.connect("users.db")
+    # conn = sqlite3.connect("depends-and-OAuth2PasswordBearer/users.db")
     conn.execute("PRAGMA foreign_keys = ON;")
     conn.row_factory = sqlite3.Row
     return conn
@@ -49,11 +50,11 @@ def add_user(email,hashed_password):
     except sqlite3.IntegrityError:
         conn.close()
         return failed(massage="Email telah digunakan")
+    conn.commit()
+    conn.close()
         
     user = get_user_by_email(email=email)
 
-    conn.commit()
-    conn.close()
     return user
 
 
