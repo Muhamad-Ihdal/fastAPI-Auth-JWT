@@ -1,9 +1,10 @@
 from fastapi import FastAPI,HTTPException,Depends
 from jose import jwt,JWTError
+from datetime import datetime,timedelta,timezone
 from schemas import UserResponse,SuccessResponse,UserRequest,LoginResponse,RefreshRequest
 # from jose import jwt,JWTError
 from auth import verify_password,hash_password,create_access_token,create_refresh_token,verify_token_jwt,oauth2_sheme
-from db import add_user,get_user_by_id,get_user_by_email,update_data,delete_data
+from db import add_user,get_user_by_id,get_user_by_email,update_data,delete_data,is_exists_refresh_token,create_table_refresh_token
 app = FastAPI()
 
 def get_current_user(token = Depends(oauth2_sheme)):
@@ -103,9 +104,18 @@ def delete_user(current_user=Depends(get_current_user)):
     return berhasil(massage=" data User berhasil di hapus",data=current_user)
 
 @app.get("/refresh")
-def refresh(refresh_token:RefreshRequest):
-    pass
+def refresh(token:RefreshRequest):
+    result = verify_token_jwt(expected_type="refresh")
+    if not result:
+        error(massage="refresh token invalid")
 
+    is_exists = is_exists_refresh_token(token.refresh_token)
+    if not is_exists["success"]:
+        return error(massage="token tidak terdatar")
+    
+    if is_exists["data"]["expired_at"] < datetime.now(timezone.utc):
+        error(massage="token expired")
+    
     
 
 # -------------------------------------------------------- request end

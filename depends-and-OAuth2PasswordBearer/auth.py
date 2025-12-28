@@ -44,11 +44,18 @@ def create_refresh_token(user_id:int) -> str:
     }
     return jwt.encode(payload,SECRET_KEY,algorithm=ALGORITHM)
 
-def verify_token_jwt(token:str):
+def verify_token_jwt(token:str,expected_type="access"):
     try:
         payload = jwt.decode(token,SECRET_KEY,algorithms=[ALGORITHM])
+    except ExpiredSignatureError:
+        return None
     except JWTError:
         return None
+    
+    if payload["type"] != expected_type:
+        return None
+
+
     return payload
 
 # ------------------------------- jwt end

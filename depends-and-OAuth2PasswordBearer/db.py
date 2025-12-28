@@ -41,6 +41,58 @@ def create_table():
     conn.close()
     return
 
+def create_table_refresh_token():
+    conn = foreign_key_on()
+    cursor = conn.cursor()
+
+
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS refresh_token(
+        id INTEGER PRIMARY KEY,
+        expired_at TEXT NOT NULL,
+        token TEXT NOT NULL,
+        user_id INTEGER,
+        FOREIGN KEY (user_id) REFRENCES user(id) ON DELETE CASCADE
+    )""")
+
+    conn.commit()
+    conn.close()
+    return
+
+def is_exists_refresh_token(token:str):
+    conn = foreign_key_on()
+    cursor = conn.cursor()
+
+
+    cursor.execute(
+        "SELECTE * FROM refresh_token WHERE token = ?",
+        (token,)
+    )
+
+    row = cursor.fetchone()
+    if not row:
+        conn.close()
+        return failed(massage="gada")
+
+    conn.close()
+    return success(data=row)
+
+def delete_token(token:str):
+    conn = foreign_key_on()
+    cursor = conn.cursor()
+
+
+    cursor.execute(
+        "DELETE FROM refresh_token WHERE token = ?",
+        (token,)
+    )
+
+    conn.commit()
+    conn.close()
+    return
+
+
+
 
 def add_user(email,hashed_password):
     conn = foreign_key_on()
