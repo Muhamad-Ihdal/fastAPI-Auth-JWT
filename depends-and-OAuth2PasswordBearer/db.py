@@ -59,6 +59,23 @@ def create_table_refresh_token():
     conn.close()
     return
 
+def add_refresh_token(expired,user_id:int,token:str):
+    conn = foreign_key_on()
+    cursor = conn.cursor()
+
+
+    cursor.execute(
+        "INSERT INTO refresh_table (expired_at,user_id,token) VALUES (?,?,?)",
+        (expired,user_id,token)
+    )
+    affected_row = cursor.rowcount
+    if not affected_row:
+        return failed()
+
+    conn.commit()
+    conn.close()
+    return success()
+
 def is_exists_refresh_token(token:str):
     conn = foreign_key_on()
     cursor = conn.cursor()
