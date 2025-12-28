@@ -1,6 +1,6 @@
 from fastapi import FastAPI,HTTPException,Depends
 from jose import jwt,JWTError
-from schemas import UserResponse,SuccessResponse,UserRequest,LoginResponse
+from schemas import UserResponse,SuccessResponse,UserRequest,LoginResponse,RefreshRequest
 # from jose import jwt,JWTError
 from auth import verify_password,hash_password,create_access_token,create_refresh_token,verify_token_jwt,oauth2_sheme
 from db import add_user,get_user_by_id,get_user_by_email,update_data,delete_data
@@ -11,6 +11,7 @@ def get_current_user(token = Depends(oauth2_sheme)):
     if not payload:
         error(massage="invalid Token or token expired")
     
+
     user_id = payload.get("sub")
     user = get_user_by_id(int(user_id))
 
@@ -100,6 +101,10 @@ def delete_user(current_user=Depends(get_current_user)):
         error(status_code=400,massage=hasil["massage"])
 
     return berhasil(massage=" data User berhasil di hapus",data=current_user)
+
+@app.get("/refresh")
+def refresh(refresh_token:RefreshRequest):
+    pass
 
     
 
