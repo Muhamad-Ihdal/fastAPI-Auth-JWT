@@ -2,7 +2,7 @@ from fastapi import FastAPI,HTTPException,Depends
 from jose import jwt,JWTError
 from schemas import UserResponse,SuccessResponse,UserRequest,LoginResponse
 # from jose import jwt,JWTError
-from auth import verify_password,hash_password,create_token_jwt,verify_token_jwt,oauth2_sheme
+from auth import verify_password,hash_password,create_access_token,create_refresh_token,verify_token_jwt,oauth2_sheme
 from db import add_user,get_user_by_id,get_user_by_email,update_data,delete_data
 app = FastAPI()
 
@@ -67,13 +67,12 @@ def login(user:UserRequest):
     if not verify_password(plain_password=user.password,hashed_password=data["password"]):
         error(massage="invalid email or password")
 
-    token = create_token_jwt(user_id=data["id"],email=data["email"])
+    access_token = create_access_token(user_id=data["id"],email=data["email"])
+    refresh_token = create_refresh_token(user_id=data["id"])
 
     return {
-        "success":True,
-        "massage":"login berhasil",
-        "data":data,
-        "access_token":token,
+        "access_token":access_token,
+        "refresh_token":refresh_token,
         "token_type":"Bearer"
     }
     

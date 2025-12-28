@@ -26,11 +26,21 @@ def verify_password(plain_password:str,hashed_password:str) -> bool:
 SECRET_KEY = "INI_CONTOH_AJA"
 ALGORITHM = "HS256"
 
-def create_token_jwt(user_id:int,email:str) -> str:
+def create_access_token(user_id:int,email:str) -> str:
     payload = {
         "sub":str(user_id),
         "email":email,
+        "type":"access",
         "exp": datetime.now(timezone.utc) + timedelta(minutes=15)
+    }
+    return jwt.encode(payload,SECRET_KEY,algorithm=ALGORITHM)
+
+
+def create_refresh_token(user_id:int) -> str:
+    payload = {
+        "sub":str(user_id),
+        "type":"refresh",
+        "exp": datetime.now(timezone.utc) + timedelta(days=7)
     }
     return jwt.encode(payload,SECRET_KEY,algorithm=ALGORITHM)
 

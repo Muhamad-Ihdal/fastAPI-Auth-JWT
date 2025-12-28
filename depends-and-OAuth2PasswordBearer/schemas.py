@@ -15,9 +15,7 @@ class SuccessResponse(BaseModel):
     data:Optional[Any]   
 
 class LoginResponse(BaseModel):
-    success:bool
-    massage:str
-    data:UserResponse
     access_token:str
+    refresh_token:str
     token_type:str
     
