@@ -4,7 +4,7 @@ from datetime import datetime,timedelta,timezone
 from schemas import UserResponse,SuccessResponse,UserRequest,LoginResponse,RefreshRequest
 # from jose import jwt,JWTError
 from auth import verify_password,hash_password,create_access_token,create_refresh_token,verify_token_jwt,oauth2_sheme
-from db import add_user,get_user_by_id,get_user_by_email,update_data,delete_data,is_exists_refresh_token,create_table_refresh_token
+from db import add_user,get_user_by_id,get_user_by_email,update_data,delete_data,delete_token,is_exists_refresh_token,create_table_refresh_token
 app = FastAPI()
 
 def get_current_user(token = Depends(oauth2_sheme)):
@@ -103,7 +103,7 @@ def delete_user(current_user=Depends(get_current_user)):
 
     return berhasil(massage=" data User berhasil di hapus",data=current_user)
 
-@app.get("/refresh")
+@app.post("/refresh")
 def refresh(token:RefreshRequest):
     result = verify_token_jwt(expected_type="refresh")
     if not result:
@@ -114,8 +114,17 @@ def refresh(token:RefreshRequest):
         return error(massage="token tidak terdatar")
     
     if is_exists["data"]["expired_at"] < datetime.now(timezone.utc):
+        delete_token(token.refresh_token)
         error(massage="token expired")
     
+    ambil_user = get_user_by_id(int(result["sub"]))
+    user = ambil_user["data"]
+    new_access_token = create_access_token(user_id=user["id"],email=user["email"])
+    return {
+        "access_token":new_access_token,
+        "refresh_token":token.refresh_token,
+        "token_type":"Bearer"
+    }
     
 
 # -------------------------------------------------------- request end
