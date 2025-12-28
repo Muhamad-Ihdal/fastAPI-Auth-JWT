@@ -52,7 +52,7 @@ def create_table_refresh_token():
         expired_at TEXT NOT NULL,
         token TEXT NOT NULL,
         user_id INTEGER,
-        FOREIGN KEY (user_id) REFRENCES user(id) ON DELETE CASCADE
+        FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE
     )""")
 
     conn.commit()
@@ -65,7 +65,7 @@ def is_exists_refresh_token(token:str):
 
 
     cursor.execute(
-        "SELECTE * FROM refresh_token WHERE token = ?",
+        "SELECT * FROM refresh_token WHERE token = ?",
         (token,)
     )
 
