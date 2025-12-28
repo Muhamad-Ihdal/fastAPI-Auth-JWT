@@ -3,10 +3,11 @@ from jose import jwt,JWTError
 from datetime import datetime,timedelta,timezone
 from schemas import UserResponse,SuccessResponse,UserRequest,LoginResponse,RefreshRequest
 from auth import verify_password,hash_password,create_access_token,create_refresh_token,verify_token_jwt,oauth2_sheme
-from db import add_user,get_user_by_id,get_user_by_email,update_data,delete_data,add_refresh_token,delete_token,is_exists_refresh_token,create_table_refresh_token
+from db import delete_table,add_user,get_user_by_id,get_user_by_email,update_data,delete_data,add_refresh_token,delete_token,is_exists_refresh_token,create_table_refresh_token
 app = FastAPI()
 
-create_table_refresh_token()
+# delete_table()
+# create_table_refresh_token()
 
 
 def get_current_user(token = Depends(oauth2_sheme)):
@@ -39,7 +40,8 @@ def berhasil(massage="Proses berhasil",data=None):
             "id":data["id"],
             "email":data["email"]
         }
-
+    else:
+        data2 = data
 
     return {
         "success":True,
@@ -75,7 +77,7 @@ def login(user:UserRequest):
     refresh_token = create_refresh_token(user_id=data["id"])
     payload = verify_token_jwt(token=refresh_token,expected_type="refresh")
     add_refresh = add_refresh_token(expired=payload["exp"],user_id=int(payload["sub"]),token=refresh_token)
-    
+
     if not add_refresh["success"]:
         error(massage="gagal menyimpan refresh token")
         
@@ -120,9 +122,9 @@ def refresh(token:RefreshRequest):
     if not is_exists["success"]:
         error(massage="token tidak terdatar")
     
-    if is_exists["data"]["expired_at"] < datetime.now(timezone.utc):
-        delete_token(token.refresh_token)
-        error(massage="token expired")
+    # if int(is_exists["data"]["expired_at"]) < int(str(datetime.now(timezone.utc))):
+    #     delete_token(token.refresh_token)
+    #     error(massage="token expired")
     
     ambil_user = get_user_by_id(int(result["sub"]))
     user = ambil_user["data"]

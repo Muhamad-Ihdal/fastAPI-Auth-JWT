@@ -31,7 +31,7 @@ def create_access_token(user_id:int,email:str) -> str:
         "sub":str(user_id),
         "email":email,
         "type":"access",
-        "exp": datetime.now(timezone.utc) + timedelta(minutes=15)
+        "exp": datetime.now(timezone.utc) + timedelta(minutes=2)
     }
     return jwt.encode(payload,SECRET_KEY,algorithm=ALGORITHM)
 

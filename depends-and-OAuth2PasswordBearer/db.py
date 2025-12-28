@@ -18,6 +18,23 @@ def success(massage="No massage",data=None):
         "data":data
     }
 
+def delete_table():
+    conn = foreign_key_on() 
+    cursor = conn.cursor()
+
+    cursor.execute("""
+    DROP TABLE IF EXISTS refresh_token;
+    """)
+    # cursor.execute("""
+    # DROP TABLE IF EXISTS users;
+    # """)
+
+    
+    conn.commit()
+    conn.close()
+
+
+
 def foreign_key_on():
     conn = sqlite3.connect("users.db")
     # conn = sqlite3.connect("depends-and-OAuth2PasswordBearer/users.db")
@@ -52,7 +69,7 @@ def create_table_refresh_token():
         expired_at TEXT NOT NULL,
         token TEXT NOT NULL,
         user_id INTEGER,
-        FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
     )""")
 
     conn.commit()
@@ -65,7 +82,7 @@ def add_refresh_token(expired,user_id:int,token:str):
 
 
     cursor.execute(
-        "INSERT INTO refresh_table (expired_at,user_id,token) VALUES (?,?,?)",
+        "INSERT INTO refresh_token (expired_at,user_id,token) VALUES (?,?,?)",
         (expired,user_id,token)
     )
     affected_row = cursor.rowcount
