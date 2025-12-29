@@ -76,7 +76,9 @@ def login(user:UserRequest):
     access_token = create_access_token(user_id=data["id"],email=data["email"])
     refresh_token = create_refresh_token(user_id=data["id"])
     payload = verify_token_jwt(token=refresh_token,expected_type="refresh")
-    add_refresh = add_refresh_token(expired=payload["exp"],user_id=int(payload["sub"]),token=refresh_token)
+    
+    expired_at = datetime.now(timezone.utc) + timedelta(days=7)
+    add_refresh = add_refresh_token(expired=expired_at,user_id=int(payload["sub"]),token=refresh_token)
 
     if not add_refresh["success"]:
         error(massage="gagal menyimpan refresh token")
@@ -122,9 +124,10 @@ def refresh(token:RefreshRequest):
     if not is_exists["success"]:
         error(massage="token tidak terdatar")
     
-    # if int(is_exists["data"]["expired_at"]) < int(str(datetime.now(timezone.utc))):
-    #     delete_token(token.refresh_token)
-    #     error(massage="token expired")
+    expired = datetime.fromisoformat(is_exists["expired_at"])
+    if  expired < datetime.now(timezone.utc):
+        delete_token(token.refresh_token)
+        error(massage="token expired")
     
     ambil_user = get_user_by_id(int(result["sub"]))
     user = ambil_user["data"]
