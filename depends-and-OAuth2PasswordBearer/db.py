@@ -25,9 +25,9 @@ def delete_table():
     cursor.execute("""
     DROP TABLE IF EXISTS refresh_token;
     """)
-    # cursor.execute("""
-    # DROP TABLE IF EXISTS users;
-    # """)
+    cursor.execute("""
+    DROP TABLE IF EXISTS users;
+    """)
 
     
     conn.commit()
@@ -67,7 +67,7 @@ def create_table_refresh_token():
     CREATE TABLE IF NOT EXISTS refresh_token(
         id INTEGER PRIMARY KEY,
         expired_at TEXT NOT NULL,
-        token TEXT NOT NULL,
+        token TEXT UNIQUE,
         user_id INTEGER,
         FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
     )""")

@@ -79,7 +79,6 @@ def login(user:UserRequest):
     
     expired_at = datetime.now(timezone.utc) + timedelta(days=7)
     add_refresh = add_refresh_token(expired=expired_at,user_id=int(payload["sub"]),token=refresh_token)
-
     if not add_refresh["success"]:
         error(massage="gagal menyimpan refresh token")
         
@@ -129,26 +128,30 @@ def refresh(token:RefreshRequest):
         delete_token(token.refresh_token)
         error(massage="token expired")
     
+    delete_token(token.refresh_token)
     ambil_user = get_user_by_id(int(result["sub"]))
     user = ambil_user["data"]
     new_access_token = create_access_token(user_id=user["id"],email=user["email"])
+    expired_at = datetime.now(timezone.utc) + timedelta(days=7)
+    new_refresh_token = create_refresh_token(user_id=result["sub"])
+
+    add_refresh = add_refresh_token(expired=expired_at,user_id=int(result["sub"]),token=new_refresh_token)
+    if not add_refresh["success"]:
+        error(massage="gagal menyimpan refresh token")
+
+
     return {
         "access_token":new_access_token,
-        "refresh_token":token.refresh_token,
+        "refresh_token":new_refresh_token,
         "token_type":"Bearer"
     }
 
 
 @app.post("/logout")
 def logout(token:RefreshRequest):
-    result = verify_token_jwt(token=token.refresh_token,expected_type="refresh")
-    if not result:
-        error(massage="masukan refresh token")
-
-    is_exists = is_exists_refresh_token(token.refresh_token)
-    if not is_exists["success"]:
-        error(massage="token tidak terdatar")
-    
+    # is_exists = is_exists_refresh_token(token.refresh_token)
+    # if not is_exists["success"]:
+    #     error(massage="token tidak terdatar")
     delete_token(token=token.refresh_token)
     return berhasil(massage="logout berhasil")
 
