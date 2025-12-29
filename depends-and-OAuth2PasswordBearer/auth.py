@@ -4,6 +4,7 @@ from datetime import datetime,timedelta,timezone
 from fastapi.security import OAuth2PasswordBearer
 from fastapi import Depends
 from db import get_user_by_id
+from config import SECRET_KEY,ALGORITHM
 
 oauth2_sheme = OAuth2PasswordBearer(tokenUrl="login")
 
@@ -23,8 +24,6 @@ def verify_password(plain_password:str,hashed_password:str) -> bool:
 
 # ------------------------------- jwt start
 
-SECRET_KEY = "INI_CONTOH_AJA"
-ALGORITHM = "HS256"
 
 def create_access_token(user_id:int,email:str) -> str:
     payload = {
