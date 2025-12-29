@@ -3,19 +3,19 @@ from jose import jwt,JWTError
 from datetime import datetime,timedelta,timezone
 from schemas import UserResponse,SuccessResponse,UserRequest,LoginResponse,RefreshRequest
 from auth import verify_password,hash_password,create_access_token,create_refresh_token,verify_token_jwt,oauth2_sheme
-from db import delete_table,add_user,get_user_by_id,get_user_by_email,update_data,delete_data,add_refresh_token,delete_token,is_exists_refresh_token,create_table_refresh_token
+from db import create_table,delete_table,add_user,get_user_by_id,get_user_by_email,update_data,delete_data,add_refresh_token,delete_token,is_exists_refresh_token,create_table_refresh_token
 app = FastAPI()
 
 # delete_table()
+# create_table()
 # create_table_refresh_token()
 
 
 def get_current_user(token = Depends(oauth2_sheme)):
-    payload = verify_token_jwt(token=token)
+    payload = verify_token_jwt(token=token,expected_type="access")
     if not payload:
         error(massage="invalid Token or token expired")
     
-
     user_id = payload.get("sub")
     user = get_user_by_id(int(user_id))
 
