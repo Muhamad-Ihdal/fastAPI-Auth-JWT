@@ -165,7 +165,6 @@ def refresh(token:RefreshRequest):
         "token_type":"Bearer"
     }
 
-
 @app.post("/logout")
 def logout(token:RefreshRequest):
     # is_exists = is_exists_refresh_token(token.refresh_token)
@@ -173,5 +172,12 @@ def logout(token:RefreshRequest):
     #     error(massage="token tidak terdatar")
     delete_token(token=token.refresh_token)
     return berhasil(massage="logout berhasil")
+
+@app.delete("/profile/{user_id}")
+def delete_spesific_user(user_id:int,user_admin = Depends(require_role("admin"))):
+    result = delete_data(user_id=user_id)
+    if not result["success"]:
+        error(status_code=400,massage=result["massage"])
+    return berhasil(massage="berhasil menghapus user")
 
 # -------------------------------------------------------- request end
