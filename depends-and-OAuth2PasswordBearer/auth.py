@@ -25,10 +25,11 @@ def verify_password(plain_password:str,hashed_password:str) -> bool:
 # ------------------------------- jwt start
 
 
-def create_access_token(user_id:int,email:str) -> str:
+def create_access_token(user_id:int,email:str,role:str) -> str:
     payload = {
         "sub":str(user_id),
         "email":email,
+        "role":role,
         "type":"access",
         "exp": datetime.now(timezone.utc) + timedelta(minutes=2)
     }

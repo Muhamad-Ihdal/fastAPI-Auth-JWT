@@ -4,6 +4,7 @@ from typing import Optional,Any
 class UserRequest(BaseModel):
     email: EmailStr
     password:str
+    role:str
 
 class UserResponse(BaseModel):
     id:int

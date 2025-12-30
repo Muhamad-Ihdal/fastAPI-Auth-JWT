@@ -36,11 +36,29 @@ def delete_table():
 
 
 def foreign_key_on():
-    # conn = sqlite3.connect("users.db")
-    conn = sqlite3.connect("depends-and-OAuth2PasswordBearer/users.db")
+    conn = sqlite3.connect("users.db")
+    # conn = sqlite3.connect("depends-and-OAuth2PasswordBearer/users.db")
     conn.execute("PRAGMA foreign_keys = ON;")
     conn.row_factory = sqlite3.Row
     return conn
+
+
+
+def alter_table():
+    conn = foreign_key_on()
+    cursor = conn.cursor()
+
+
+    cursor.execute("""
+    ALTER TABLE users
+    ADD COLUMN role TEXT NOT NULL DEFAULT 'user'    
+    """)
+
+    conn.commit()
+    conn.close()
+    return
+
+
 
 def create_table():
     conn = foreign_key_on()
@@ -128,14 +146,14 @@ def delete_token(token:str):
 
 
 
-def add_user(email,hashed_password):
+def add_user(email,hashed_password,role):
     conn = foreign_key_on()
     cursor = conn.cursor()
 
     try:
         cursor.execute(
-            "INSERT INTO users (email,password) VALUES (?,?)",
-            (email,hashed_password)
+            "INSERT INTO users (email,password,role) VALUES (?,?)",
+            (email,hashed_password,role)
         )
     except sqlite3.IntegrityError:
         conn.close()

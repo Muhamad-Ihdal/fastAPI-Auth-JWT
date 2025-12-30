@@ -3,9 +3,10 @@ from jose import jwt,JWTError
 from datetime import datetime,timedelta,timezone
 from schemas import UserResponse,SuccessResponse,UserRequest,LoginResponse,RefreshRequest
 from auth import verify_password,hash_password,create_access_token,create_refresh_token,verify_token_jwt,oauth2_sheme
-from db import create_table,delete_table,add_user,get_user_by_id,get_user_by_email,update_data,delete_data,add_refresh_token,delete_token,is_exists_refresh_token,create_table_refresh_token
+from db import alter_table,create_table,delete_table,add_user,get_user_by_id,get_user_by_email,update_data,delete_data,add_refresh_token,delete_token,is_exists_refresh_token,create_table_refresh_token
 app = FastAPI()
 
+# alter_table()
 # delete_table()
 # create_table()
 # create_table_refresh_token()
@@ -24,6 +25,8 @@ def get_current_user(token = Depends(oauth2_sheme)):
     return user['data']
     
 
+
+# ---------------------------------------------------------return start
 def error(status_code=401,massage="not valid"):
     raise HTTPException(
         status_code=status_code,
@@ -48,13 +51,30 @@ def berhasil(massage="Proses berhasil",data=None):
         "massage":massage,
         "data":data2
     }
+# --------------------------------------------------------- return end
+
+
+# --------------------------------------------------------- role start
+
+def require_role(required_role:str):
+    def checker(user = Depends(get_current_user)):
+        if user["role"] != required_role:
+            error(
+                status_code=403,
+                massage="Forbidden"
+            )
+        return user
+    return checker
+            
+
+# --------------------------------------------------------- role start
 
 # -------------------------------------------------------- request start
 
 @app.post("/register",response_model=SuccessResponse)
 def register(user: UserRequest):
     # user = user.model_dump()
-    hasil= add_user(user.email,hash_password(user.password))
+    hasil= add_user(user.email,hash_password(user.password),user.role)
     if not hasil["success"]:
         error(massage=hasil["massage"])
 
@@ -73,7 +93,7 @@ def login(user:UserRequest):
     if not verify_password(plain_password=user.password,hashed_password=data["password"]):
         error(massage="invalid email or password")
 
-    access_token = create_access_token(user_id=data["id"],email=data["email"])
+    access_token = create_access_token(user_id=data["id"],email=data["email"],role=data["role"])
     refresh_token = create_refresh_token(user_id=data["id"])
     payload = verify_token_jwt(token=refresh_token,expected_type="refresh")
     
@@ -123,7 +143,7 @@ def refresh(token:RefreshRequest):
     if not is_exists["success"]:
         error(massage="token tidak terdatar")
     
-    expired = datetime.fromisoformat(is_exists["expired_at"])
+    expired = datetime.fromisoformat(is_exists["data"]["expired_at"])
     if  expired < datetime.now(timezone.utc):
         delete_token(token.refresh_token)
         error(massage="token expired")
@@ -138,7 +158,6 @@ def refresh(token:RefreshRequest):
     add_refresh = add_refresh_token(expired=expired_at,user_id=int(result["sub"]),token=new_refresh_token)
     if not add_refresh["success"]:
         error(massage="gagal menyimpan refresh token")
-
 
     return {
         "access_token":new_access_token,
