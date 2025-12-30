@@ -61,7 +61,7 @@ def require_role(required_role:str):
         if user["role"] != required_role:
             error(
                 status_code=403,
-                massage="Forbiddenn"
+                massage="Forbidden"
             )
         return user
     return checker
@@ -112,8 +112,16 @@ def login(user:UserRequest):
 def profile(user = Depends(get_current_user)):
     return user
 
-@app.put("/profile",response_model=SuccessResponse)
-def update_profile(new_profile:UserRequest,current_user = Depends(get_current_user)):
+
+@app.put("/profile/{user_id}",response_model=SuccessResponse)
+def update_profile(user_id:int,new_profile:UserRequest,current_user = Depends(get_current_user)):
+    user = get_user_by_id(user_id=user_id)
+    if not user["success"]:
+        error(status_code=400,massage=user["massage"])
+    if user["id"] != current_user["id"] and current_user["role"] != "admin":
+        error(status_code=403,massage="Forbidden")
+    
+
     new_hashed_password = hash_password(new_profile.password)
     hasil = update_data(
         user_id=current_user["id"],
