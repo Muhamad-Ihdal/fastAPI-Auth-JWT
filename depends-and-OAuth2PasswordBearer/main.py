@@ -61,7 +61,7 @@ def require_role(required_role:str):
         if user["role"] != required_role:
             error(
                 status_code=403,
-                massage="Forbidden"
+                massage="Forbiddenn"
             )
         return user
     return checker
