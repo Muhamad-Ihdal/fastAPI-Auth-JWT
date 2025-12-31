@@ -124,7 +124,7 @@ def update_profile(user_id:int,new_profile:UserRequest,current_user = Depends(ge
 
     new_hashed_password = hash_password(new_profile.password)
     hasil = update_data(
-        user_id=current_user["id"],
+        user_id=user_id,
         new_email=new_profile.email,
         new_password=new_hashed_password)
     success = hasil["success"]
