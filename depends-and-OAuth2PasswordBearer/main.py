@@ -73,7 +73,7 @@ def require_role(required_role:str):
 
 @app.post("/register",response_model=SuccessResponse)
 def register(user: UserRequest):
-    # user = user.model_dump()
+    # user = user.model_dump() <------------ mengubah user ke dict ---------------->
     hasil= add_user(user.email,hash_password(user.password),user.role)
     if not hasil["success"]:
         error(massage=hasil["massage"])
